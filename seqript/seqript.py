@@ -17,46 +17,25 @@ from subprocess import Popen
 
 
 def _nop(
+    seqript         : "Seqript",
     nop             : Any                   = None,
-    name            : str                   = "",
-    cwd             : Path                  = None,
-    env             : Dict[str, str]        = None,
-    engines         : Dict[str, Callable]   = None,
 ):
     pass
 
 
 def _seq(
+    seqript         : "Seqript",
     seq             : List,
-    name            : str                   = "",
-    cwd             : Path                  = None,
-    env             : Dict[str, str]        = None,
-    engines         : Dict[str, Callable]   = None,
 ):
     for _task in seq:
-        seqript = Seqript(
-            name = name,
-            cwd = cwd,
-            env = env,
-            engines = engines,
-        )
         seqript(**_task)
 
 
 def _par(
+    seqript         : "Seqript",
     par             : List,
-    name            : str                   = "",
-    cwd             : Path                  = None,
-    env             : Dict[str, str]        = None,
-    engines         : Dict[str, Callable]   = None,
 ):
     def _run(**_task):
-        seqript = Seqript(
-            name = name,
-            cwd = cwd,
-            env = env,
-            engines = engines,
-        )
         seqript(**_task)
     threads = [Thread(target=_run, kwargs=_task) for _task in par]
     for _thread in threads:
@@ -66,33 +45,24 @@ def _par(
 
 
 def _comment(
+    seqript         : "Seqript",
     comment         : str                   = "",
-    name            : str                   = "",
-    cwd             : Path                  = None,
-    env             : Dict[str, str]        = None,
-    engines         : Dict[str, Callable]   = None,
 ):
-    print(f"[{name}]: {comment}")
+    print(f"[{seqript.name}]: {comment}")
 
 
 def _sleep(
+    seqript         : "Seqript",
     sleep           : int                   = 0,
-    name            : str                   = "",
-    cwd             : Path                  = None,
-    env             : Dict[str, str]        = None,
-    engines         : Dict[str, Callable]   = None,
 ):
-    print(f"[{name}]: Start sleep {sleep}s.")
+    print(f"[{seqript.name}]: Start sleep {sleep}s.")
     time.sleep(sleep)
-    print(f"[{name}]: Done sleep {sleep}s.")
+    print(f"[{seqript.name}]: Done sleep {sleep}s.")
 
 
 def _cmd(
+    seqript         : "Seqript",
     cmd             : List[str],
-    name            : str                   = None,
-    cwd             : Path                  = None,
-    env             : Dict[str, str]        = None,
-    engines         : Dict[str, Callable]   = None,
 ):
     cwd = cwd or Path.cwd()
     env = env or dict()
@@ -132,17 +102,14 @@ class Seqript:
     def __call__(self, **kwargs):
         for _k, _call in self.engines.items():
             if _k in kwargs:
-                if "name" in kwargs and kwargs['name']:
-                    kwargs['name'] = f"{self.name}.{kwargs['name']}"
-                else:
-                    kwargs['name'] = f"{self.name}.*{_k}"
-                if "cwd" in kwargs and kwargs["cwd"]:
-                    kwargs["cwd"] = self.cwd / kwargs["cwd"]
-                if "env" in kwargs and kwargs["env"]:
-                    kwargs["env"] = self.env | kwargs["env"]
-                kwargs["engines"] = self.engines
+                seqript = Seqript(
+                    name = f"{self.name}.{kwargs.pop("name", f"*{_k}")}",
+                    cwd = self.cwd / kwargs.pop("cwd", ""),
+                    env = self.env | kwargs.pop("env", {}),
+                    engines = self.engines,
+                )
                 try:
-                    _call(**kwargs)
+                    _call(seqript, **kwargs)
                 except Exception as e:
                     # TODO: Error handling
                     pass
