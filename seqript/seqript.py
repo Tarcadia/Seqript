@@ -35,9 +35,7 @@ def _par(
     seqript         : "Seqript",
     par             : List,
 ):
-    def _run(**_task):
-        seqript(**_task)
-    threads = [Thread(target=_run, kwargs=_task) for _task in par]
+    threads = [Thread(target=seqript, kwargs=_task) for _task in par]
     for _thread in threads:
         _thread.start()
     for _thread in threads:
