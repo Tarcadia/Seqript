@@ -1,0 +1,29 @@
+{
+    "seq": [
+        {
+            "name": "hello",
+            "cmd": "python --version"
+        },
+        {
+            "par": [
+                {"sleep": 1},
+                {"sleep": 2},
+                {"sleep": 3}
+            ]
+        },
+        {
+            "comment": "Hello World"
+        },
+        {
+            "par": [
+                {"sleep": 1},
+                {"sleep": 2},
+                {"sleep": 3},
+                {
+                    "name": "X",
+                    "comment": "Hello World"
+                }
+            ]
+        }
+    ]
+}
