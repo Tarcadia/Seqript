@@ -82,8 +82,9 @@ def _sleep(
     env             : Dict[str, str]        = None,
     engines         : Dict[str, Callable]   = None,
 ):
+    print(f"[{name}]: Start sleep {sleep}s.")
     time.sleep(sleep)
-    print(f"[{name}]: Sleep {sleep}ms.")
+    print(f"[{name}]: Done sleep {sleep}s.")
 
 
 def _cmd(
