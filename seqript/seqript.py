@@ -62,14 +62,12 @@ def _cmd(
     seqript         : "Seqript",
     cmd             : List[str],
 ):
-    cwd = cwd or Path.cwd()
-    env = env or dict()
     if isinstance(cmd, str):
         cmd = shlex.split(cmd)
     _proc = Popen(
         args=cmd,
-        cwd=str(cwd),
-        env=os.environ | env,
+        cwd=str(seqript.cwd),
+        env=(os.environ | seqript.env),
     )
     _proc.wait()
 
