@@ -7,80 +7,19 @@ from typing import Iterable, Iterator, AsyncIterator
 from typing import Tuple, List, Set, Dict, Any
 from typing import Callable
 
-import os
-import time
-import shlex
 from pathlib import Path
-from threading import Thread
-from subprocess import Popen
 
+from . import engine
 
-
-def _nop(
-    seqript         : "Seqript",
-    nop             : Any                   = None,
-):
-    pass
-
-
-def _seq(
-    seqript         : "Seqript",
-    seq             : List,
-):
-    for _task in seq:
-        seqript(**_task)
-
-
-def _par(
-    seqript         : "Seqript",
-    par             : List,
-):
-    threads = [Thread(target=seqript, kwargs=_task) for _task in par]
-    for _thread in threads:
-        _thread.start()
-    for _thread in threads:
-        _thread.join()
-
-
-def _comment(
-    seqript         : "Seqript",
-    comment         : str                   = "",
-):
-    print(f"[{seqript.name}]: {comment}")
-
-
-def _sleep(
-    seqript         : "Seqript",
-    sleep           : int                   = 0,
-):
-    print(f"[{seqript.name}]: Start sleep {sleep}s.")
-    time.sleep(sleep)
-    print(f"[{seqript.name}]: Done sleep {sleep}s.")
-
-
-def _cmd(
-    seqript         : "Seqript",
-    cmd             : List[str],
-):
-    if isinstance(cmd, str):
-        cmd = shlex.split(cmd)
-    _proc = Popen(
-        args=cmd,
-        cwd=str(seqript.cwd),
-        env=(os.environ | seqript.env),
-    )
-    _proc.wait()
 
 
 class Seqript:
 
     _DEFAULT_ENGINES = {
-        "nop": _nop,
-        "seq": _seq,
-        "par": _par,
-        "comment": _comment,
-        "sleep": _sleep,
-        "cmd": _cmd,
+        "nop": engine.nop,
+        "seq": engine.seq,
+        "par": engine.par,
+        "cmd": engine.cmd,
     }
 
     def __init__(
