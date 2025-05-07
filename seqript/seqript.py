@@ -35,12 +35,15 @@ class Seqript:
         self.engines = engines or dict()
 
     def __call__(self, **kwargs):
+        _name = kwargs.pop("name", None)
+        _cwd = kwargs.pop("cwd", None)
+        _env = kwargs.pop("env", None)
         for _k, _call in self.engines.items():
             if _k in kwargs:
                 seqript = Seqript(
-                    name = f"{self.name}.{kwargs.pop("name", f"*{_k}")}",
-                    cwd = self.cwd / kwargs.pop("cwd", ""),
-                    env = self.env | kwargs.pop("env", {}),
+                    name = f"{self.name}.{_name}" if _name else f"{self.name}.*{_k}",
+                    cwd = self.cwd / _cwd if _cwd else self.cwd,
+                    env = self.env | _env if _env else self.env,
                     engines = self.engines,
                 )
                 try:
