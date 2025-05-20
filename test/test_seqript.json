@@ -1,8 +1,12 @@
 {
+    "env": {
+        "PYTHONCMD": "python",
+        "TEST_COMMENT": "Hello World"
+    },
     "seq": [
         {
             "name": "hello",
-            "cmd": "python --version"
+            "cmd": "${PYTHONCMD} --version"
         },
         {
             "par": [
@@ -12,16 +16,23 @@
             ]
         },
         {
-            "comment": "Hello World"
+            "comment": "${TEST_COMMENT}"
         },
         {
+            "env": {
+                "TEST_COMMENT": "${TEST_COMMENT} 2"
+            },
             "par": [
                 {"sleep": 1},
                 {"sleep": 2},
                 {"sleep": 3},
                 {
                     "name": "X",
-                    "comment": "Hello World"
+                    "comment": "${TEST_COMMENT}"
+                },
+                {
+                    "name": "Y",
+                    "comment": "${TEST_NONEVAR}"
                 }
             ]
         }
