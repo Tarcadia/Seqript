@@ -10,6 +10,7 @@ from typing import Callable
 from pathlib import Path
 
 from . import engine
+from .util import expand_variable_dict
 
 
 
@@ -38,6 +39,7 @@ class Seqript:
         _name = kwargs.pop("name", None)
         _cwd = kwargs.pop("cwd", None)
         _env = kwargs.pop("env", None)
+        _env = _env and expand_variable_dict(_env, self.env)
         for _k, _call in self.engines.items():
             if _k in kwargs:
                 seqript = Seqript(
